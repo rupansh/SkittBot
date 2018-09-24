@@ -227,6 +227,14 @@ def deepfryer(bot: Bot, update: Update):
         for i in stringfps.split('/'):
             templist.append(float(i))
         fps = numpy.divide(templist[0], templist[1])
+        if fps > 30.0:
+            message.reply_text("fps of the gif is too high! Make sure its less than or equal to 30! Reducing it to 20")
+            fps = 20.0
+        filesize = float(os.path.getsize('gif.mp4'))
+        if filesize > 5000000.0:
+            message.reply_text("Filesize is larger than 5MB! not allowed!")
+            deepdata3 = []
+            return
         os.system('ffmpeg -i gif.mp4 -r {} gifdata/out%05d.jpg'.format(fps)) 
         duration = float(jsondata["streams"][0]["duration"])
         imgno = int(duration*fps)
@@ -266,8 +274,8 @@ async def process_deepfry(image: Image, reply: Message, bot: Bot):
             image.save('./image{}.jpg'.format(i), 'jpeg')
         delay = 100/fps
         os.system('convert -delay {} -loop 0 *.jpg final.gif'.format(delay))
-        os.system('ffmpeg -i final.gif -c:v libvpx -crf 6 -b:v 500K -pix_fmt yuv420p compfin.webm')
-        os.system('ffmpeg -i compfin.webm compfin.mp4')
+        os.system('ffmpeg -y -i final.gif -c:v libvpx -crf 6 -b:v 500K -pix_fmt yuv420p compfin.webm')
+        os.system('ffmpeg -y -i compfin.webm compfin.mp4')
         meh = 'compfin.mp4'
 
     # send it back
